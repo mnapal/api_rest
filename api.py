@@ -47,5 +47,60 @@ def load_hired_employees():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/load_jobs', methods=['POST'])
+def load_jobs():
+    try:
+        url = 'https://raw.githubusercontent.com/mnapal/files/main/jobs.csv'
+        column_names = ['id', 'job']
+        # Read CSV from url into a DataFrame
+        df = pd.read_csv(url, names=column_names, header=0)
+        # Drop duplicate rows
+        df = df.drop_duplicates()
+        # Drop rows with null values
+        df = df.dropna()
+        # Convert column to numeric
+        df['id'] = pd.to_numeric(df['id'], errors='coerce')
+        # Convert DataFrame to list of dictionaries
+        data_to_insert = df.to_dict(orient='records')
+        # Save data to db
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        session.bulk_insert_mappings(Job, data_to_insert)
+        session.commit()
+
+        return jsonify({"message": "Job's data inserted successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/load_departments', methods=['POST'])
+def load_departments():
+    try:
+        url = 'https://raw.githubusercontent.com/mnapal/files/main/departments.csv'
+        column_names = ['id', 'department']
+        # Read CSV from url into a DataFrame
+        df = pd.read_csv(url, names=column_names, header=0)
+        # Drop duplicate rows
+        df = df.drop_duplicates()
+        # Drop rows with null values
+        df = df.dropna()
+        # Convert column to numeric
+        df['id'] = pd.to_numeric(df['id'], errors='coerce')
+        # Convert DataFrame to list of dictionaries
+        data_to_insert = df.to_dict(orient='records')
+        # Save data to db
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        session.bulk_insert_mappings(Department, data_to_insert)
+        session.commit()
+
+        return jsonify({"message": "Department's data inserted successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 if __name__ == '__main__':
     app.run(port=5050, debug=True)
