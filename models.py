@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, create_engine
 from sqlalchemy.orm import declarative_base, relationship
+from config import DB_URL
 
 
 Base = declarative_base()
@@ -21,11 +22,10 @@ class HiredEmployees(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=False)
     name = Column(String)
     hire_datetime = Column(DateTime)
-    department_id = Column(Integer, ForeignKey('departments.id'))
-    job_id = Column(Integer, ForeignKey('jobs.id'))
+    department_id = Column(Integer)
+    job_id = Column(Integer)
 
 
 # Create the tables in the database
-DATABASE_URL = "postgresql://postgres:postgres@localhost/data"
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DB_URL)
 Base.metadata.create_all(bind=engine)
