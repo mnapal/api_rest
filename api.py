@@ -5,8 +5,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from models import HiredEmployees, Job, Department, engine
 
-app = Flask(__name__)
 
+
+app = Flask(__name__)
 
 
 # create a test route
@@ -109,7 +110,7 @@ def load_departments():
 @app.route('/employees_by_department', methods=['GET'])
 def employees_by_department():
     try:
-        # Execute the provided SQL query
+        # Execute the SQL query
         Session = sessionmaker(bind=engine)
         session = Session()
         query_result = session.execute(text("""
@@ -139,7 +140,7 @@ def employees_by_department():
 @app.route('/total_of_employees_by_department', methods=['GET'])
 def total_of_employees_by_department():
     try:
-        # Execute the provided SQL query
+        # Execute the SQL query
         Session = sessionmaker(bind=engine)
         session = Session()
         query_result = session.execute(text("""
@@ -150,7 +151,9 @@ def total_of_employees_by_department():
             GROUP BY d.id, department
             HAVING count(1)  > (select avg(total_hired)
                                 from (select department_id, count(1) as total_hired 
-                                      from hired_employees he 
+                                      from hired_employees he
+                                      inner join departments as d on he.department_id = d.id
+                                      inner join jobs as j on he.job_id = j.id
                                       where EXTRACT(YEAR FROM hire_datetime) = 2021
                                       group by department_id
                                 ) as mean) 
@@ -165,4 +168,4 @@ def total_of_employees_by_department():
 
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    app.run(debug=True)
