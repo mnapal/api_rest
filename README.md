@@ -19,7 +19,13 @@ This endpoint (`/total_of_employees_by_department`) is designed to return a list
 ## Building and Running the Application
 
 ### Build the App Image
-To build the application image, navigate to the root directory and execute the following command:
+To build the application image, clone the repository using the following command:
+
+```bash
+git clone https://github.com/mnapal/api_rest.git
+```
+
+Navigate to the root directory and execute the command:
 
 ```bash
 docker build -t flask-appi .
